@@ -61,7 +61,9 @@ Windows (Not test yet) | DirectX 11.1
 
 #### Debian/Ubuntu:
 
-> apt-get install libxcb1-dev libxcb-randr0-dev libxcb-shm0-dev
+```shell
+apt-get install libxcb1-dev libxcb-randr0-dev libxcb-shm0-dev
+```
 
 ## Acknowledgments
 
