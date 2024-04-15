@@ -1,4 +1,5 @@
 use crate::x11::Display;
+use crate::Error;
 use std::{io, ptr, slice};
 use xcb::shm::{Attach, Detach, GetImage, Seg};
 use xcb::x::{Drawable, ImageFormat};
@@ -63,7 +64,7 @@ impl Capturer {
         &self.display
     }
 
-    pub fn frame(&mut self) -> &[u8] {
+    pub fn frame(&mut self) -> Result<&[u8], Error> {
         let rect = self.display.rect();
         let cookie = self.display.server().conn().send_request(&GetImage {
             drawable: Drawable::Window(self.display.root()),
@@ -77,8 +78,9 @@ impl Capturer {
             format: ImageFormat::ZPixmap as u8,
         });
 
-        let _ = self.display.server().conn().wait_for_reply(cookie).unwrap();
-        unsafe { slice::from_raw_parts(self.buffer, self.size) }
+        let _ = self.display.server().conn().wait_for_reply(cookie)?;
+        let frame = unsafe { slice::from_raw_parts(self.buffer, self.size) };
+        Ok(frame)
     }
 }
 

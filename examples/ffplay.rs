@@ -1,5 +1,6 @@
 extern crate scrap;
 
+use scrap::Error;
 use std::io::ErrorKind;
 
 fn main() {
@@ -34,7 +35,7 @@ fn main() {
             Ok(frame) => {
                 out.write_all(&frame).unwrap();
             }
-            Err(ref e) if e.kind() == ErrorKind::WouldBlock => {
+            Err(Error::Io(e)) if e.kind() == ErrorKind::WouldBlock => {
                 // Wait for the frame.
             }
             Err(_) => {

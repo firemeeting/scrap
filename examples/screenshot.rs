@@ -2,7 +2,7 @@ extern crate repng;
 extern crate scrap;
 
 use cfg_if::cfg_if;
-use scrap::{Capturer, Display};
+use scrap::{Capturer, Display, Error};
 use std::fs::File;
 use std::io::ErrorKind;
 use std::time::Duration;
@@ -20,7 +20,7 @@ fn main() {
 
         let frame = match capturer.frame() {
             Ok(buffer) => buffer,
-            Err(error) => {
+            Err(Error::Io(error)) => {
                 if error.kind() == ErrorKind::WouldBlock {
                     // Keep spinning.
                     std::thread::sleep(one_frame);
@@ -28,6 +28,9 @@ fn main() {
                 } else {
                     panic!("Error: {}", error);
                 }
+            }
+            Err(error) => {
+                panic!("Error: {}", error);
             }
         };
 

@@ -1,4 +1,4 @@
-use crate::x11;
+use crate::{x11, Error};
 use std::rc::Rc;
 use std::{io, ops};
 
@@ -17,8 +17,8 @@ impl Capturer {
         self.0.display().rect().h as usize
     }
 
-    pub fn frame(&mut self) -> io::Result<Frame> {
-        Ok(Frame(self.0.frame()))
+    pub fn frame(&mut self) -> Result<Frame, Error> {
+        Ok(Frame(self.0.frame()?))
     }
 }
 
