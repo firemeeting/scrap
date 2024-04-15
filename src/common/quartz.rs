@@ -1,4 +1,5 @@
 use crate::{quartz, Error};
+use core_foundation::data::CFData;
 use std::{io, ops};
 
 pub struct Capturer(quartz::Capturer);
@@ -23,12 +24,12 @@ impl Capturer {
     }
 }
 
-pub struct Frame(Vec<u8>);
+pub struct Frame(CFData);
 
 impl ops::Deref for Frame {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
-        &self.0
+        self.0.bytes()
     }
 }
 

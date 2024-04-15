@@ -1,5 +1,6 @@
 use crate::quartz::display::Display;
 use crate::Error;
+use core_foundation::data::CFData;
 use core_graphics::display::{kCGNullWindowID, kCGWindowImageDefault, kCGWindowListOptionAll};
 use core_graphics::window::create_image;
 use std::io;
@@ -21,7 +22,7 @@ impl Capturer {
         self.display.height()
     }
 
-    pub fn frame(&mut self) -> Result<Vec<u8>, Error> {
+    pub fn frame(&mut self) -> Result<CFData, Error> {
         let cg_image = create_image(
             self.display.bounds(),
             kCGWindowListOptionAll,
@@ -29,6 +30,6 @@ impl Capturer {
             kCGWindowImageDefault,
         )
         .ok_or(io::Error::from(ErrorKind::WouldBlock))?;
-        Ok(cg_image.data().to_vec())
+        Ok(cg_image.data())
     }
 }
