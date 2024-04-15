@@ -1,3 +1,4 @@
+use crate::Error;
 use core_graphics::display::{CGDirectDisplayID, CGDisplay, CGError, CGMainDisplayID, CGRect};
 
 #[repr(C)]
@@ -17,8 +18,10 @@ pub struct Rect {
 }
 
 impl Display {
-    fn new(id: CGDirectDisplayID) -> Display {
+    fn new(id: CGDirectDisplayID) -> Result<Display, CGError> {
         let display = CGDisplay::new(id);
+        display.show_cursor()?;
+
         let bounds = display.bounds();
 
         let mut scale_factor = None;
@@ -27,7 +30,7 @@ impl Display {
             scale_factor = Some(pixel_width as f32 / bounds.size.width as f32);
         }
 
-        Display {
+        Ok(Display {
             display,
             scale_factor,
             is_primary: display.is_main(),
@@ -37,18 +40,22 @@ impl Display {
                 w: bounds.size.width as u32,
                 h: bounds.size.height as u32,
             },
-        }
+        })
     }
 
-    pub fn primary() -> Display {
+    pub fn primary() -> Result<Display, Error> {
         let id = unsafe { CGMainDisplayID() };
-        Display::new(id)
+        Ok(Display::new(id)?)
     }
 
     pub fn online() -> Result<Vec<Display>, CGError> {
         let displays = CGDisplay::active_displays()?;
-        let displays = displays.iter().map(|id| Display::new(*id));
-        Ok(displays.collect())
+
+        let mut online = Vec::with_capacity(displays.len());
+        for display in displays {
+            online.push(Display::new(display)?);
+        }
+        Ok(online)
     }
 
     pub fn width(&self) -> usize {
