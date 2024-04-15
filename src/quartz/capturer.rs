@@ -29,16 +29,6 @@ impl Capturer {
             kCGWindowImageDefault,
         )
         .ok_or(io::Error::from(ErrorKind::WouldBlock))?;
-
-        let width = cg_image.width();
-        let height = cg_image.height();
-        let bytes = Vec::from(cg_image.data().bytes());
-
-        let mut buffer = Vec::with_capacity(width * height * 4);
-        for row in bytes.chunks_exact(cg_image.bytes_per_row()) {
-            buffer.extend_from_slice(&row[..width * 4]);
-        }
-
-        Ok(buffer)
+        Ok(cg_image.data().to_vec())
     }
 }

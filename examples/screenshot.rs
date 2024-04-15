@@ -1,7 +1,6 @@
 extern crate repng;
 extern crate scrap;
 
-use cfg_if::cfg_if;
 use scrap::{Capturer, Display, Error};
 use std::fs::File;
 use std::io::ErrorKind;
@@ -38,25 +37,18 @@ fn main() {
 
         // Flip the ARGB image into a BGRA image.
 
-        let file = File::create("screenshot.png").unwrap();
-        cfg_if! {
-            if #[cfg(target_os = "macos")] {
-                repng::encode(file, w as u32, h as u32, &frame).unwrap();
-            } else {
-                let mut bitflipped = Vec::with_capacity(w * h * 4);
-                let stride = frame.len() / h;
-                for y in 0..h {
-                    for x in 0..w {
-                        let i = stride * y + 4 * x;
-                        bitflipped.extend_from_slice(&[frame[i + 2], frame[i + 1], frame[i], 255]);
-                    }
-                }
-
-                repng::encode(file, w as u32, h as u32, &bitflipped).unwrap();
+        let mut bitflipped = Vec::with_capacity(w * h * 4);
+        let stride = frame.len() / h;
+        for y in 0..h {
+            for x in 0..w {
+                let i = stride * y + 4 * x;
+                bitflipped.extend_from_slice(&[frame[i + 2], frame[i + 1], frame[i], 255]);
             }
         }
 
         // Save the image.
+        let file = File::create("screenshot.png").unwrap();
+        repng::encode(file, w as u32, h as u32, &bitflipped).unwrap();
 
         println!("Image saved to `screenshot.png`.");
         break;
