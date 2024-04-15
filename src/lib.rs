@@ -32,29 +32,19 @@ pub enum Error {
 #[cfg(target_os = "macos")]
 impl From<core_graphics::display::CGError> for Error {
     fn from(value: core_graphics::display::CGError) -> Self {
-        if value == core_graphics::base::kCGErrorSuccess {
-            return Self::CgError("success");
-        } else if value == core_graphics::base::kCGErrorFailure {
-            return Self::CgError("failure");
-        } else if value == core_graphics::base::kCGErrorIllegalArgument {
-            return Self::CgError("illegal argument");
-        } else if value == core_graphics::base::kCGErrorInvalidConnection {
-            return Self::CgError("invalid connection");
-        } else if value == core_graphics::base::kCGErrorInvalidContext {
-            return Self::CgError("invalid context");
-        } else if value == core_graphics::base::kCGErrorCannotComplete {
-            return Self::CgError("cannot complete");
-        } else if value == core_graphics::base::kCGErrorNotImplemented {
-            return Self::CgError("not implemented");
-        } else if value == core_graphics::base::kCGErrorRangeCheck {
-            return Self::CgError("range check");
-        } else if value == core_graphics::base::kCGErrorTypeCheck {
-            return Self::CgError("type check");
-        } else if value == core_graphics::base::kCGErrorInvalidOperation {
-            return Self::CgError("invalid operation");
-        } else if value == core_graphics::base::kCGErrorNoneAvailable {
-            return Self::CgError("none available");
+        match value {
+            0 => Self::CgError("success"),
+            1000 => Self::CgError("failure"),
+            1001 => Self::CgError("illegal argument"),
+            1002 => Self::CgError("invalid connection"),
+            1003 => Self::CgError("invalid context"),
+            1004 => Self::CgError("cannot complete"),
+            1006 => Self::CgError("not implemented"),
+            1007 => Self::CgError("range check"),
+            1008 => Self::CgError("type check"),
+            1010 => Self::CgError("invalid operation"),
+            1011 => Self::CgError("none available"),
+            _ => Self::CgError("unknown"),
         }
-        Self::CgError("unknown")
     }
 }
