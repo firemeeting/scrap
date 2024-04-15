@@ -1,4 +1,4 @@
-use crate::quartz;
+use crate::{quartz, Error};
 use std::{io, ops};
 
 pub struct Capturer(quartz::Capturer);
@@ -18,7 +18,7 @@ impl Capturer {
         self.0.height()
     }
 
-    pub fn frame(&mut self) -> io::Result<Frame> {
+    pub fn frame(&mut self) -> Result<Frame, Error> {
         Ok(Frame(self.0.frame()?))
     }
 }
